@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import cast
 
-from pypipeline.pipeline import Pipeline
+from pypipeline import Pipeline
 
 
 def test_pipeline_normal():

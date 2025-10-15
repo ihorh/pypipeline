@@ -4,7 +4,7 @@ from statistics import mean, stdev
 
 import pytest
 
-from pypipeline.pipeline import Pipeline
+from pypipeline import Pipeline
 
 TEXT = "The quick brown fox, jumping over the lazy dog, suddenly stopped and looked around."
 

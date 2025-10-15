@@ -48,19 +48,19 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
 
-type Call[**P, R, *RT] = Callable[P, R] | Callable[P, tuple[*RT]]
-type Pipe[**P, R, *RT] = _PipeStd[P, R] | _PipeTUn[P, *RT]
-
 type ResultUnpack = Literal["tuple", "dict"]
 
 type _ComposeType = Literal["no_compose", "regular", "tuple_unpack"]
+
+type _Call[**P, R, *RT] = Callable[P, R] | Callable[P, tuple[*RT]]
+type _Pipe[**P, R, *RT] = _PipeStd[P, R] | _PipeTUn[P, *RT]
 
 
 class _PipeThenMixin:
     _compose_type: _ComposeType
     f: Callable | None = None
 
-    def _then_impl[**P, R, *TR](self, f: Call, *, result_unpack: ResultUnpack | None = None) -> Pipe[P, R, *TR]:
+    def _then_impl[**P, R, *TR](self, f: _Call, *, result_unpack: ResultUnpack | None = None) -> _Pipe[P, R, *TR]:
         # * in @overload we trust - thus we cast
         if result_unpack is None:
             return _PipeStd[P, R](cast("Callable[P, R]", f))
@@ -69,7 +69,7 @@ class _PipeThenMixin:
         msg = f"Unsupported unpack result: {result_unpack}"
         raise ValueError(msg)
 
-    def _then[**P, R, *RT](self, f: Call, *, result_unpack: ResultUnpack | None = None) -> Pipe[P, R, *RT]:
+    def _then[**P, R, *RT](self, f: _Call, *, result_unpack: ResultUnpack | None = None) -> _Pipe[P, R, *RT]:
         func = self._compose_self_with(f)
         return self._then_impl(func, result_unpack=result_unpack)
 
@@ -104,7 +104,7 @@ class Pipeline(_PipeThenMixin):
     @overload
     def then[**P, *RT](self, f: Callable[P, tuple[*RT]], *, result_unpack: Literal["tuple"]) -> _PipeTUn[P, *RT]: ...
 
-    def then[**P, R, *RT](self, f: Call, *, result_unpack: ResultUnpack | None = None) -> Pipe[P, R, *RT]:
+    def then[**P, R, *RT](self, f: _Call, *, result_unpack: ResultUnpack | None = None) -> _Pipe[P, R, *RT]:
         return self._then(f, result_unpack=result_unpack)
 
 
@@ -134,7 +134,7 @@ class _PipeStd[**P, R](_PipeBase[P, R], _PipeThenMixin):
     @overload
     def then[*GRT](self, g: Callable[[R], tuple[*GRT]], *, result_unpack: Literal["tuple"]) -> _PipeTUn[P, *GRT]: ...
 
-    def then[GR, *GRT](self, g: Call, result_unpack: ResultUnpack | None = None) -> Pipe[P, GR, *GRT]:
+    def then[GR, *GRT](self, g: _Call, result_unpack: ResultUnpack | None = None) -> _Pipe[P, GR, *GRT]:
         return self._then(g, result_unpack=result_unpack)
 
 
@@ -156,5 +156,5 @@ class _PipeTUn[**P, *TR](_PipeBase[P, tuple[*TR]], _PipeThenMixin):
     @overload
     def then[*GRT](self, g: Callable[[*TR], tuple[*GRT]], *, result_unpack: Literal["tuple"]) -> _PipeTUn[P, *GRT]: ...
 
-    def then[GR, *GRT](self, g: Call, *, result_unpack: ResultUnpack | None = None) -> Pipe[P, GR, *GRT]:
+    def then[GR, *GRT](self, g: _Call, *, result_unpack: ResultUnpack | None = None) -> _Pipe[P, GR, *GRT]:
         return self._then(g, result_unpack=result_unpack)

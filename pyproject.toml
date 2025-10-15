@@ -1,11 +1,19 @@
 [project]
 name = "pypipeline"
 version = "0.1.0"
-description = "Add your description here"
+description = "Type-safe functional pipeline composition with some support of result unpacking between stages."
 readme = "README.md"
 authors = [{ name = "Ihor H", email = "jaspery@pm.me" }]
 requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
 dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/ihorh/pypipeline"
 
 [dependency-groups]
 dev = ["pytest>=8.4.2"]
@@ -27,4 +35,7 @@ line-length = 120
 typeCheckingMode = "basic"
 
 [tool.pytest.ini_options]
-filterwarnings = ["error", "ignore::pypipeline._warnings.UnstableFeatureWarning"]
+filterwarnings = [
+    "error",
+    "ignore::pypipeline._warnings.UnstableFeatureWarning",
+]

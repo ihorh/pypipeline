@@ -41,8 +41,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Literal, cast, overload
 
-from pypipeline._warnings import warning_unstable_feature_or_operator
 from pypipeline._compose import _compose_no_ret_unpack, _compose_ret_tuple_unpack
+from pypipeline._warnings import warning_unstable_feature_or_operator
 
 if TYPE_CHECKING:
     from collections.abc import Callable

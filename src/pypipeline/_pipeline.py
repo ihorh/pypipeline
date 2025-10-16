@@ -1,39 +1,70 @@
 """Pipeline.
 
-## Type Algebra
+Type Algebra
+------------
 
 This module defines a strongly typed, composable pipeline system based on
 ParamSpec and TypeVarTuple generics.
 
 **Let**
 
-* `P` denote the parameter specification of the current stage (the callable's input signature),
-* `R` denote a single-value return type, and
-* `RT` denote a variadic tuple of return types when the stage returns a tuple.
-* `GR` denote a single-value return type of the next stage, and
-* `GRT` denote a variadic tuple of return types when the next stage returns a tuple.
+* `P` - `ParamSpec` - the parameter specification of the current stage (the callable's input signature).
+* `R` - `TypeVar` - a single-value return type.
+* `RT` - `TypeVarTuple` - a variadic tuple of return types when the stage returns a tuple.
+* `GR` - `TypeVar` - denotes a single-value return type of the **next** stage.
+* `GRT` - `TypeVarTuple` denotes a variadic tuple of return types when the **next** stage returns a tuple.
+
+Naming of type params is following this logic:
+
+* letter `P` - params (args)
+* letter `R` - return type
+* letter `T` - tuple
+* letter `G` - describes next stage - function `g`
 
 **Pipeline**
 
 A pipeline can thus be represented as:
 
-* `Pipe[P, R]`   === `Callable[P, R]`
-* `Pipe[P, *RT]` === `Callable[P, tuple[*RT]]`
+* `_Pipe[P, R]`   === `Callable[P, R]`
+* `_Pipe[P, *RT]` === `Callable[P, tuple[*RT]]`
 
 Composition rules are enforced by type relations:
 
-* A `Pipe[P, R]` can compose with a function `Callable[[R], GR]` producing `Pipe[P, GR]`.
-* A `Pipe[P, R]` can compose with a tuple-returning function `Callable[[R], tuple[*GRT]]`
-  producing `Pipe[P, *GRT]`.
-* A `Pipe[P, *RT]` (tuple-unpacking stage) can compose with a
-  - function `Callable[[*RT], GR]` producing `Pipe[P, GR]`,
+* A `_Pipe[P, R]` can compose with a function `Callable[[R], GR]` producing `Pipe[P, GR]`.
+* A `_Pipe[P, R]` can compose with a tuple-returning function `Callable[[R], tuple[*GRT]]`
+  producing `_Pipe[P, *GRT]`.
+* A `_Pipe[P, *RT]` (tuple-unpacking stage) can compose with a
+  - function `Callable[[*RT], GR]` producing `_Pipe[P, GR]`,
   - or with another tuple-returning function `Callable[[*RT], tuple[*GRT]]`
-    producing `Pipe[P, *GRT]`.
+    producing `_Pipe[P, *GRT]`.
 
 **To Be Implemented**
 
 * Unpacking `dict` return type into `kwargs`
 * Unpackaing `tuple[tuple, dict]` return type into `args` and `kwargs`
+
+Unpacking Unpacked
+------------------
+
+When a stage returns a tuple, the **next** stage can automatically receive it as
+multiple positional arguments if **this** stage is created with `result_unpack="tuple"`.
+
+In other words, `result_unpack="tuple"` instructs stage which is being created to
+remember to unpack its `tuple` return value for the next stage during evaluation.
+
+Of course, it is not required to unpack tuples. Pipeline will pass the tuple as is
+if the next stage function accepts tuple argument. Type checkers should be happy.
+
+Also typecheckers should complain if argument does not match the type of previous
+stage return value.
+
+Additionally, typecheckers will complain if types of tuple elements do not match
+types of corresponding positional arguments of the next stage.
+
+Laziness
+--------
+
+Pipelines are lazy - they are not evaluated until the `.call()` method is called.
 """
 
 from __future__ import annotations

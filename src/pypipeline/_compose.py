@@ -7,6 +7,26 @@ if TYPE_CHECKING:
 
 
 def compose[**P, R, R2](f: Callable[P, R], g: Callable[[R], R2]) -> Callable[P, R2]:
+    """Compose two callables into a single callable.
+
+    Returns a new function that, when called, passes its arguments to `f`,
+    then passes the result of `f` into `g`.
+
+    Equivalent to: `lambda *args, **kwargs: g(f(*args, **kwargs))`
+
+    Parameters
+    ----------
+    f : Callable
+        A callable that takes parameters `P` and returns a value of type `R`.
+    g : Callable
+        A callable that takes a single argument of type `R` and returns a value of type `R2`.
+
+    Returns
+    -------
+    Callable
+        A callable that accepts the same parameters as `f` and returns the result of `g(f(...))`.
+
+    """
     return _compose_no_ret_unpack(f, g)
 
 

@@ -47,7 +47,7 @@ Unpacking Unpacked
 ------------------
 
 When a stage returns a tuple, the **next** stage can automatically receive it as
-multiple positional arguments iuf **this** stage is created with `result_unpack="tuple"`.
+multiple positional arguments if **this** stage is created with `result_unpack="tuple"`.
 
 In other words, `result_unpack="tuple"` instructs stage which is being created to
 remember to unpack its `tuple` return value for the next stage during evaluation.

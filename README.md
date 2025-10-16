@@ -5,6 +5,20 @@ Type-safe functional pipeline composition with support for tuple unpacking.
 This module implements a generic pipeline builder that preserves full callable
 signatures using Python 3.12+ generic syntax (`[**P]`, `[*Ts]`).
 
+## Installation
+
+For now package is not published to index, however it can be installed from source.
+
+For example with `uv` it can be done in `pyproject.toml` file like this:
+
+```toml
+[project]
+...
+dependencies = ["pypipeline"]
+
+[tool.uv.sources]
+pypipeline = { git = "https://github.com/ihorh/pypipeline" }
+```
 ## Key features
 
 * **Composable functions** – chain arbitrary callables with `.then()`
@@ -35,6 +49,10 @@ signatures using Python 3.12+ generic syntax (`[**P]`, `[*Ts]`).
 * `compose`
 
   Compose two callables `f` and `g` as `g(f(*args, **kwargs))` in a type-safe way.
+
+## Details
+
+See module docstrings in [__init__.py](src/pypipeline/__init__.py) and [_pipeline.py](src/pypipeline/_pipeline.py).
 
 ## Example
 

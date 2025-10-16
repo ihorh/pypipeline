@@ -26,6 +26,11 @@ result = pipeline.call(1, 2)
 )
 ```
 
+See Also
+--------
+Documentation of module `pypipeline._pipeline` for in depth explanation of
+how composition and unpacking works.
+
 """
 
 from pypipeline._compose import compose

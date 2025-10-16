@@ -53,3 +53,20 @@ def test_pipeline_complex_02():
     )
 
     print(pipeline.call(17, 5))
+
+def test_pipeline_tuple_unpack_edge_case():
+    """Tuple unpack should not affect pipeline output if applied to the last stage."""
+    pipeline_unp = (
+        Pipeline()
+        .then(lambda n, p: (cast("int", n + 13), cast("int", p)), result_unpack="tuple")
+        .then(lambda n, p: (cast("float", n / 5), cast("int", p)), result_unpack="tuple")
+    )
+    pipeline_norm = (
+        Pipeline()
+        .then(lambda n, p: (cast("int", n + 13), cast("int", p)), result_unpack="tuple")
+        .then(lambda n, p: (cast("float", n / 5), cast("int", p)))
+    )
+    r_unp = pipeline_unp.call(1, 2)
+    r_norm = pipeline_norm.call(1, 2)
+    assert r_unp == r_norm
+    assert r_norm[0] == 2.8

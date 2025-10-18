@@ -80,6 +80,30 @@ or using unstable feature - operator `|`:
 result = Pipeline() >> f1 >> f2 | (2, 3) # result should be still 12
 ```
 
+### Example From One Of My NLP Projects
+
+```python
+    def sw_remover(tokens: Sequence[str], sw_loader: StopWordsLoader) -> Sequence[str]:
+        return [t for t in tokens if t.lower() not in sw_loader()]
+
+    txt_mws = config.text_middlewares
+    txt_mws = [txt_mws] if isinstance(txt_mws, TextMiddleware) else txt_mws or []
+    tokenizer = config.tokenizer_factory()
+    sw_loaders = config.stopwords_loaders or []
+
+    pipeline = Pipeline()
+
+    if config.text_preprocessor:
+        pipeline = pipeline >> config.text_preprocessor
+    pipeline = reduce(lambda p, mv: p >> mv, [txtmw.before for txtmw in txt_mws], pipeline)
+    pipeline = pipeline >> tokenizer.tokenize
+    pipeline = reduce(lambda p, mv: p >> mv, [partial(sw_remover, sw_loader=swl) for swl in sw_loaders], pipeline)
+    if config.remove_punctuation:
+        pipeline = pipeline >> (lambda tokens: [t for t in tokens if t not in config.remove_punctuation])
+    pipeline = pipeline >> tokenizer.detokenize
+    pipeline = reduce(lambda p, mv: p >> mv, [txtmw.after for txtmw in reversed(txt_mws)], pipeline)
+```
+
 ## Disclaimer
 
 > This library is primarily designed for statically-typed functional composition

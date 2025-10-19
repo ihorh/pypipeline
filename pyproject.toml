@@ -26,7 +26,7 @@ build-backend = "uv_build"
 select = ["ALL"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/*" = ["ANN201", "D100", "D103","INP001", "S101", ]
+"**/tests/*" = ["ANN201", "D100", "D103", "INP001", "PLR2004", "S101", "T201"]
 
 [tool.ruff]
 line-length = 120
